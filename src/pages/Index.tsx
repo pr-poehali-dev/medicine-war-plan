@@ -1,207 +1,181 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
-interface TimelineEvent {
-  year: string;
+interface Task {
+  id: string;
   title: string;
-  description: string;
   category: string;
+  priority: 'high' | 'medium' | 'low';
+  completed: boolean;
+  icon: string;
 }
 
-const timelineEvents: TimelineEvent[] = [
-  {
-    year: '1941',
-    title: 'Создание системы эвакогоспиталей',
-    description: 'Организована сеть эвакуационных госпиталей в тылу. За годы войны развёрнуто более 6000 госпиталей.',
-    category: 'Организация'
-  },
-  {
-    year: '1942',
-    title: 'Внедрение донорства крови',
-    description: 'Массовое донорское движение спасло тысячи жизней. Создана система заготовки и переливания крови на фронте.',
-    category: 'Медицина'
-  },
-  {
-    year: '1943',
-    title: 'Борьба с эпидемиями',
-    description: 'Успешная профилактика эпидемий сыпного тифа и других инфекций в войсках и среди населения.',
-    category: 'Профилактика'
-  },
-  {
-    year: '1944',
-    title: 'Новые методы хирургии',
-    description: 'Разработаны передовые методы лечения ранений. Академик Н.Н. Бурденко совершенствует нейрохирургию.',
-    category: 'Хирургия'
-  },
-  {
-    year: '1945',
-    title: 'Возвращение в строй',
-    description: '72,3% раненых возвращены в строй - беспрецедентный показатель в истории военной медицины.',
-    category: 'Результаты'
-  }
+const initialTasks: Task[] = [
+  { id: '1', title: 'Пропылесосить ковры', category: 'Уборка', priority: 'high', completed: false, icon: 'Sparkles' },
+  { id: '2', title: 'Помыть посуду', category: 'Кухня', priority: 'high', completed: false, icon: 'Utensils' },
+  { id: '3', title: 'Постирать бельё', category: 'Стирка', priority: 'medium', completed: false, icon: 'Shirt' },
+  { id: '4', title: 'Полить цветы', category: 'Растения', priority: 'medium', completed: false, icon: 'Flower2' },
+  { id: '5', title: 'Вынести мусор', category: 'Уборка', priority: 'high', completed: false, icon: 'Trash2' },
+  { id: '6', title: 'Приготовить ужин', category: 'Кухня', priority: 'high', completed: false, icon: 'ChefHat' },
+  { id: '7', title: 'Протереть пыль', category: 'Уборка', priority: 'low', completed: false, icon: 'Wind' },
+  { id: '8', title: 'Погладить одежду', category: 'Стирка', priority: 'low', completed: false, icon: 'Waves' },
 ];
 
-const Index = () => {
-  const [selectedYear, setSelectedYear] = useState<string | null>(null);
+const categories = ['Все', 'Уборка', 'Кухня', 'Стирка', 'Растения'];
 
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      'Организация': 'bg-accent/20 text-accent-foreground border-accent',
-      'Медицина': 'bg-primary/20 text-primary-foreground border-primary',
-      'Профилактика': 'bg-secondary/30 text-secondary-foreground border-secondary',
-      'Хирургия': 'bg-muted text-muted-foreground border-muted-foreground',
-      'Результаты': 'bg-accent text-accent-foreground border-accent'
-    };
-    return colors[category] || 'bg-secondary';
+const Index = () => {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [selectedCategory, setSelectedCategory] = useState('Все');
+
+  const toggleTask = (id: string) => {
+    setTasks(tasks.map(task => 
+      task.id === id ? { ...task, completed: !task.completed } : task
+    ));
+  };
+
+  const filteredTasks = selectedCategory === 'Все' 
+    ? tasks 
+    : tasks.filter(task => task.category === selectedCategory);
+
+  const completedCount = tasks.filter(t => t.completed).length;
+  const progressPercentage = Math.round((completedCount / tasks.length) * 100);
+
+  const getPriorityColor = (priority: string) => {
+    switch(priority) {
+      case 'high': return 'bg-red-100 text-red-700 border-red-300';
+      case 'medium': return 'bg-yellow-100 text-yellow-700 border-yellow-300';
+      case 'low': return 'bg-green-100 text-green-700 border-green-300';
+      default: return 'bg-gray-100';
+    }
+  };
+
+  const getPriorityLabel = (priority: string) => {
+    switch(priority) {
+      case 'high': return 'Важно';
+      case 'medium': return 'Средне';
+      case 'low': return 'Не срочно';
+      default: return '';
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      <div className="container mx-auto px-4 py-8 md:py-16">
-        <header className="text-center mb-12 md:mb-20 animate-fade-in">
-          <div className="inline-block mb-4 p-4 bg-primary/10 rounded-lg border-2 border-primary/20">
-            <Icon name="Cross" size={48} className="text-primary" />
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <header className="text-center mb-8 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-400 to-amber-500 rounded-2xl mb-4 shadow-lg">
+            <Icon name="Home" size={40} className="text-white" />
           </div>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary mb-4 tracking-tight">
-            Медицина в период<br />Великой Отечественной войны
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent mb-2">
+            Домашние дела
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            1941–1945
+          <p className="text-lg text-gray-600">
+            Организуйте свой быт легко и с удовольствием
           </p>
-          <div className="mt-6 h-1 w-32 bg-primary/30 mx-auto rounded"></div>
         </header>
 
-        <section className="mb-16 md:mb-24">
-          <Card className="bg-card/80 backdrop-blur border-2 border-primary/20 shadow-2xl">
-            <CardHeader className="text-center pb-8">
-              <CardTitle className="text-3xl md:text-4xl text-primary mb-2">
-                История медицины военного времени
+        <div className="mb-8 animate-fade-in" style={{ animationDelay: '100ms' }}>
+          <Card className="bg-white/80 backdrop-blur border-2 border-orange-200 shadow-xl">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl text-orange-700 flex items-center gap-2">
+                <Icon name="TrendingUp" size={24} />
+                Прогресс дня
               </CardTitle>
-              <CardDescription className="text-base md:text-lg">
-                Подвиг советских медиков в годы войны
-              </CardDescription>
             </CardHeader>
-            <CardContent className="prose prose-lg max-w-none text-foreground">
-              <p className="text-base md:text-lg leading-relaxed mb-4">
-                Великая Отечественная война стала временем величайших испытаний для советской медицины. 
-                Медицинские работники проявили героизм и самоотверженность, спасая жизни раненых бойцов 
-                в условиях фронта.
-              </p>
-              <p className="text-base md:text-lg leading-relaxed">
-                За годы войны медицинская служба вернула в строй более 17 миллионов раненых и больных воинов. 
-                Это достижение стало возможным благодаря чёткой организации эвакуации, высокому мастерству 
-                хирургов и самоотверженному труду медсестёр и санитаров.
+            <CardContent>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-500 ease-out"
+                      style={{ width: `${progressPercentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <div className="text-2xl font-bold text-orange-600">
+                  {completedCount}/{tasks.length}
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mt-2">
+                {progressPercentage === 100 
+                  ? '🎉 Все дела выполнены! Отличная работа!' 
+                  : `Выполнено ${progressPercentage}% задач`}
               </p>
             </CardContent>
           </Card>
-        </section>
+        </div>
 
-        <section className="mb-16 md:mb-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold text-primary mb-4">
-              Временная шкала событий
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Ключевые достижения военной медицины 1941–1945
-            </p>
-          </div>
+        <div className="mb-6 flex flex-wrap gap-2 justify-center animate-fade-in" style={{ animationDelay: '200ms' }}>
+          {categories.map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? 'default' : 'outline'}
+              onClick={() => setSelectedCategory(category)}
+              className={selectedCategory === category 
+                ? 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 shadow-lg'
+                : 'border-2 border-orange-200 hover:bg-orange-50 hover:border-orange-300 text-gray-700'}
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
 
-          <div className="relative">
-            <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-primary/30 hidden md:block"></div>
-            
-            <div className="space-y-8 md:space-y-12">
-              {timelineEvents.map((event, index) => (
-                <div
-                  key={index}
-                  className={`relative animate-fade-in ${
-                    index % 2 === 0 ? 'md:pr-1/2' : 'md:pl-1/2'
-                  }`}
-                  style={{ animationDelay: `${index * 150}ms` }}
-                >
-                  <Card
-                    className={`cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 ${
-                      selectedYear === event.year
-                        ? 'border-primary shadow-2xl bg-primary/5'
-                        : 'border-primary/20 bg-card/90'
-                    }`}
-                    onClick={() => setSelectedYear(selectedYear === event.year ? null : event.year)}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredTasks.map((task, index) => (
+            <Card
+              key={task.id}
+              className={`cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 animate-fade-in ${
+                task.completed
+                  ? 'bg-green-50/80 border-green-300 opacity-75'
+                  : 'bg-white/80 border-orange-200'
+              }`}
+              style={{ animationDelay: `${300 + index * 50}ms` }}
+              onClick={() => toggleTask(task.id)}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
+                    task.completed 
+                      ? 'bg-green-100' 
+                      : 'bg-gradient-to-br from-orange-100 to-amber-100'
+                  }`}>
+                    <Icon 
+                      name={task.completed ? 'CheckCircle2' : task.icon} 
+                      size={24} 
+                      className={task.completed ? 'text-green-600' : 'text-orange-600'}
+                    />
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={`${getPriorityColor(task.priority)} text-xs`}
                   >
-                    <CardHeader>
-                      <div className="flex items-start justify-between gap-4 mb-2">
-                        <Badge
-                          variant="outline"
-                          className="text-2xl md:text-3xl font-bold px-4 py-2 bg-primary text-primary-foreground border-primary"
-                        >
-                          {event.year}
-                        </Badge>
-                        <Badge
-                          variant="outline"
-                          className={`${getCategoryColor(event.category)} px-3 py-1`}
-                        >
-                          {event.category}
-                        </Badge>
-                      </div>
-                      <CardTitle className="text-xl md:text-2xl text-primary">
-                        {event.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-foreground leading-relaxed">
-                        {event.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <div className="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-primary border-4 border-background rounded-full shadow-lg"></div>
+                    {getPriorityLabel(task.priority)}
+                  </Badge>
                 </div>
-              ))}
-            </div>
+                <CardTitle className={`text-lg ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                  {task.title}
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  {task.category}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+
+        {filteredTasks.length === 0 && (
+          <div className="text-center py-12 animate-fade-in">
+            <Icon name="Search" size={48} className="text-gray-400 mx-auto mb-4" />
+            <p className="text-xl text-gray-500">Нет задач в этой категории</p>
           </div>
-        </section>
+        )}
 
-        <section className="grid md:grid-cols-3 gap-6 md:gap-8 mb-16">
-          <Card className="text-center bg-card/90 border-2 border-primary/20 hover:shadow-xl transition-shadow">
-            <CardHeader>
-              <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                <Icon name="Heart" size={32} className="text-primary" />
-              </div>
-              <CardTitle className="text-primary text-2xl">17 млн</CardTitle>
-              <CardDescription className="text-base">
-                раненых и больных возвращены в строй
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="text-center bg-card/90 border-2 border-primary/20 hover:shadow-xl transition-shadow">
-            <CardHeader>
-              <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                <Icon name="Hospital" size={32} className="text-primary" />
-              </div>
-              <CardTitle className="text-primary text-2xl">6000+</CardTitle>
-              <CardDescription className="text-base">
-                эвакогоспиталей развёрнуто в тылу
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="text-center bg-card/90 border-2 border-primary/20 hover:shadow-xl transition-shadow">
-            <CardHeader>
-              <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                <Icon name="Award" size={32} className="text-primary" />
-              </div>
-              <CardTitle className="text-primary text-2xl">72,3%</CardTitle>
-              <CardDescription className="text-base">
-                раненых возвращены в строй
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </section>
-
-        <footer className="text-center pt-12 border-t-2 border-primary/20">
-          <p className="text-muted-foreground text-sm">
-            В память о подвиге советских медиков 1941–1945
+        <footer className="text-center mt-12 pt-8 border-t-2 border-orange-200">
+          <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
+            <Icon name="Heart" size={16} className="text-orange-500" />
+            Создано для уютного дома
           </p>
         </footer>
       </div>
