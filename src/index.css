@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Merriweather:wght@400;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,35 +6,35 @@
 
 @layer base {
   :root {
-    --background: 35 47% 83%;
-    --foreground: 15 25% 10%;
+    --background: 210 25% 98%;
+    --foreground: 215 28% 17%;
 
-    --card: 35 47% 93%;
-    --card-foreground: 15 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 17%;
 
-    --popover: 35 47% 93%;
-    --popover-foreground: 15 25% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 17%;
 
-    --primary: 25 47% 27%;
-    --primary-foreground: 35 47% 93%;
+    --primary: 200 95% 35%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 35 30% 77%;
-    --secondary-foreground: 15 25% 10%;
+    --secondary: 210 16% 93%;
+    --secondary-foreground: 215 28% 17%;
 
-    --muted: 35 30% 85%;
-    --muted-foreground: 15 16% 47%;
+    --muted: 210 16% 93%;
+    --muted-foreground: 215 20% 55%;
 
-    --accent: 25 47% 40%;
-    --accent-foreground: 35 47% 93%;
+    --accent: 195 100% 42%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 25 20% 65%;
-    --input: 25 20% 75%;
-    --ring: 25 47% 27%;
+    --border: 210 16% 88%;
+    --input: 210 16% 88%;
+    --ring: 200 95% 35%;
 
-    --radius: 0.25rem;
+    --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -99,7 +99,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: Georgia, serif;
+    font-family: "Merriweather", Georgia, serif;
   }
 
   h1,
@@ -108,6 +108,6 @@
   h4,
   h5,
   h6 {
-    font-family: "Playfair Display", serif;
+    font-family: "Montserrat", sans-serif;
   }
 }
